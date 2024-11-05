@@ -8,9 +8,16 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ error: "Required fields are missing" });
     }
 
+    // Ensure the 'items' field is in the correct format
+    const orderItems = items.map((item) => ({
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+    }));
+
     const newOrder = new Order({
       id,
-      items,
+      items: orderItems,
       total,
       address,
       isPaid: isPaid || false,
@@ -27,7 +34,6 @@ const createOrder = async (req, res) => {
     res.status(500).json({ error: "Failed to create order" });
   }
 };
-
 // Retrieve all orders
 const getAllOrders = async (req, res) => {
   try {
