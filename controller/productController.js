@@ -25,7 +25,6 @@ const getProductById = async (req, res) => {
 const reduceQualityAfterOrder = async (req, res) => {
   try {
     const { id, quantity } = req.body;
-
     // Kiểm tra xem id và quantity có hợp lệ không
     if (!id || !quantity || quantity <= 0) {
       return res.status(400).json({ message: "Invalid id or quantity" });

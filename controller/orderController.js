@@ -4,7 +4,7 @@ const Product = require("../model/product");
 const createOrder = async (req, res) => {
   try {
     const { id, items, total, isPaid, address } = req.body;
-
+    console.log(req.body);
     if (!id || !items || !total || !address || isPaid === undefined) {
       return res.status(400).json({ error: "Required fields are missing" });
     }
@@ -21,15 +21,10 @@ const createOrder = async (req, res) => {
       })
     );
 
-    const calculatedTotal = await orderItems.reduce(async (acc, item) => {
-      const product = await Product.findById(item.product);
-      return (await acc) + product.price * item.quantity;
-    }, 0);
-
     const newOrder = Order({
       id,
       items: orderItems,
-      total: calculatedTotal,
+      total: total,
       address: address,
       isPaid: isPaid || false,
       date: new Date(),
