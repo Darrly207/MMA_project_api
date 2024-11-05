@@ -25,7 +25,7 @@ const orderSchema = new mongoose.Schema({
     },
   ],
   total: {
-    type: String, // Changed from String to Number
+    type: Number, // Changed from String to Number
     required: true,
     min: 0, // Ensure total is not negative
   },
