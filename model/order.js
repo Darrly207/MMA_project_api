@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const orderSchema = new mongoose.Schema({
   id: {
     type: String,
@@ -24,7 +25,7 @@ const orderSchema = new mongoose.Schema({
     },
   ],
   total: {
-    type: String,
+    type: String, // Changed from String to Number
     required: true,
     min: 0, // Ensure total is not negative
   },
@@ -37,6 +38,7 @@ const orderSchema = new mongoose.Schema({
     default: false,
   },
 });
-const Order = mongoose.model("Order", productSchema);
+
+const Order = mongoose.model("Order", orderSchema);
 
 module.exports = Order;

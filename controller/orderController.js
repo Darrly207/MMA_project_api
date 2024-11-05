@@ -1,5 +1,6 @@
 const Order = require("../model/order");
 const Product = require("../model/product");
+
 const createOrder = async (req, res) => {
   try {
     const { id, items, total, isPaid, address } = req.body;
@@ -14,14 +15,15 @@ const createOrder = async (req, res) => {
           throw new Error(`Product with ID ${item.product} not found`);
         }
         return {
-          product: product._id, // Reference to the Product
+          product: product._id,
           quantity: item.quantity,
         };
       })
     );
-    const calculatedTotal = orderItems.reduce(async (acc, item) => {
+
+    const calculatedTotal = await orderItems.reduce(async (acc, item) => {
       const product = await Product.findById(item.product);
-      return acc + product.price * item.quantity;
+      return (await acc) + product.price * item.quantity;
     }, 0);
 
     const newOrder = Order({
@@ -49,16 +51,14 @@ const getAllOrders = async (req, res) => {
     const orders = await Order.find();
     res.status(200).json(orders);
   } catch (error) {
-    console.error("Error retrieving orders:", error);
-    res.status(500).json({ error: "Failed to retrieve orders" });
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
 
-// Retrieve a single order by ID
 const getOrderById = async (req, res) => {
   try {
-    const OrderModel = mongoose.model("Order", orderSchema);
-    const order = await OrderModel.findOne({ id: req.params.id });
+    const order = await Order.findOne({ id: req.params.id });
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
