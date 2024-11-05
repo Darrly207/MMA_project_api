@@ -1,10 +1,8 @@
-// controllers/orderController.js
 const Order = require("../model/order");
 
-// Create a new order
 const createOrder = async (req, res) => {
   try {
-    const { id, items, total, isPaid } = req.body;
+    const { id, items, total, isPaid, address } = req.body;
 
     // Validate required fields
     if (!id || !items || !total) {
@@ -15,7 +13,8 @@ const createOrder = async (req, res) => {
       id,
       items,
       total,
-      isPaid: isPaid || false, // Default to unpaid if not provided
+      address,
+      isPaid: isPaid || false,
       date: new Date(),
     });
 

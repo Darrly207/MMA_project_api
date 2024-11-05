@@ -12,11 +12,15 @@ app.use(express.json());
 
 // Kết nối MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    // Sử dụng biến môi trường
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    process.env.MONGODB_URI ||
+      "mongodb+srv://1nguyenngocduy:hello@databasecuaduy.mp8gw.mongodb.net/MMA",
+    {
+      // Sử dụng biến môi trường
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("Error connecting to MongoDB", err));
 
