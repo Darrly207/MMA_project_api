@@ -1,5 +1,5 @@
 const Order = require("../model/order");
-
+const Product = require("../model/product");
 const createOrder = async (req, res) => {
   try {
     const { id, items, total, isPaid, address } = req.body;
@@ -7,19 +7,28 @@ const createOrder = async (req, res) => {
     if (!id || !items || !total || !address || isPaid === undefined) {
       return res.status(400).json({ error: "Required fields are missing" });
     }
+    const orderItems = await Promise.all(
+      items.map(async (item) => {
+        const product = await Product.findById(item.product);
+        if (!product) {
+          throw new Error(`Product with ID ${item.product} not found`);
+        }
+        return {
+          product: product._id, // Reference to the Product
+          quantity: item.quantity,
+        };
+      })
+    );
+    const calculatedTotal = orderItems.reduce(async (acc, item) => {
+      const product = await Product.findById(item.product);
+      return acc + product.price * item.quantity;
+    }, 0);
 
-    // Ensure the 'items' field is in the correct format
-    const orderItems = items.map((item) => ({
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-    }));
-
-    const newOrder = new Order({
+    const newOrder = Order({
       id,
       items: orderItems,
-      total,
-      address,
+      total: calculatedTotal,
+      address: address,
       isPaid: isPaid || false,
       date: new Date(),
     });
@@ -34,7 +43,7 @@ const createOrder = async (req, res) => {
     res.status(500).json({ error: "Failed to create order" });
   }
 };
-// Retrieve all orders
+
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find();
@@ -48,7 +57,8 @@ const getAllOrders = async (req, res) => {
 // Retrieve a single order by ID
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findOne({ id: req.params.id });
+    const OrderModel = mongoose.model("Order", orderSchema);
+    const order = await OrderModel.findOne({ id: req.params.id });
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
