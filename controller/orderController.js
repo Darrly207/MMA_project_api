@@ -4,8 +4,7 @@ const createOrder = async (req, res) => {
   try {
     const { id, items, total, isPaid, address } = req.body;
 
-    // Validate required fields
-    if (!id || !items || !total) {
+    if (!id || !items || !total || !address || isPaid === undefined) {
       return res.status(400).json({ error: "Required fields are missing" });
     }
 
@@ -19,9 +18,10 @@ const createOrder = async (req, res) => {
     });
 
     await newOrder.save();
-    res
-      .status(201)
-      .json({ message: "Order created successfully", order: newOrder });
+    res.status(201).json({
+      message: "Order created successfully",
+      order: newOrder,
+    });
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).json({ error: "Failed to create order" });
